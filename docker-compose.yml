@@ -10,7 +10,12 @@ services:
     ports:
       - "24224:24224"
       - "24224:24224/udp"
-  
+    logging:
+        driver: "json-file"
+        options:
+            max-size: 100m
+            max-file: "5"
+
   elasticsearch:
     image: elasticsearch:5.3.0
 
