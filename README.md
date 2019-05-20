@@ -3,7 +3,7 @@ Docker compose file for setting up a EFK service
 
 A basic docker compose file that will set up Elasticsearch, Fluentd, and Kibana.
 
-Increase virtal memory
+Increase virtual memory
 ----------------------
 
 Elasticsearch uses a mmapfs directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions.
