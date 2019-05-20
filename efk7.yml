@@ -12,7 +12,7 @@ services:
   fluentd:
     build: ./fluentd
     volumes:
-      - ./fluentd/conf:/fluentd/etc
+      - ./fluentd/latest_conf:/fluentd/etc
     depends_on:
       - elastic01
       - elastic02
