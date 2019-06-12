@@ -1,0 +1,74 @@
+# EFK docker stack using latest elasticsearch and kibana
+# Author: buldozer911@github
+
+version: '3.6'
+
+volumes:
+  esdata01:
+  esdata02:
+
+services:
+
+  fluentd:
+    build: ./fluentd
+    volumes:
+      - ./fluentd/latest_conf:/fluentd/etc
+    depends_on:
+      - elastic01
+      - elastic02
+      - kibana01
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    logging:
+      driver: "json-file"
+      options:
+          max-size: 100m
+          max-file: "5"
+
+  elastic01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.1
+    container_name: elastic01
+    environment:
+      - node.name=elastic01
+      - discovery.seed_hosts=elastic02
+      - cluster.initial_master_nodes=elastic01,elastic02
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+
+  elastic02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.1
+    container_name: elastic02
+    environment:
+      - node.name=elastic02
+      - discovery.seed_hosts=elastic01
+      - cluster.initial_master_nodes=elastic01,elastic02
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata02:/usr/share/elasticsearch/data
+
+  kibana01:
+    image: docker.elastic.co/kibana/kibana:7.0.1
+    container_name: kibana01
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elastic01:9200
+    ports:
+      - 5601:5601
+    depends_on: 
+      - elastic01
+      - elastic02
