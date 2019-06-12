@@ -23,7 +23,8 @@ The file `example/httpd.yml` shows how to configure a service to use EFK as its 
 
 with latest elasticsearch 7.0.1 and kibana 7.0.1 run:
 
-    docker-compose -f efk7.yml -f example/httpd.yml 
+    docker-compose -f efk7.yml -f example/httpd.yml up
+    
 
 Then, go to your browser and access `http://localhost:80` (httpd) and `http://localhost:5601` (kibana). You should be able to see the httpd's logs in kibana's discovery tab. By the way, if you are wondering what is this index kibana asks the fist time you access it, it is `fluentd-*`.
 
@@ -33,7 +34,7 @@ After you are done, just run:
 
 with latest elasticsearch 7.0.1 and kibana 7.0.1 run:
     
-    docker-compose -f efk7.yml.yml -f example/httpd.yml up
+    docker-compose -f efk7.yml.yml -f example/httpd.yml rm -f
 
 And all services will be reclaimed.
 
