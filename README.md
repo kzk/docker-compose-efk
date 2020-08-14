@@ -1,20 +1,19 @@
 Docker compose file for setting up a EFK service
 ================================================
 
-A basic docker compose file that will set up Elasticsearch, Fluentd, and Kibana.
+A basic docker compose file that will set up Elasticsearch, Fluent Bit, and Kibana.
 
-Example
--------
+The following docker compose allows to ingest data through Forward protocol or Syslog in UDP mode, examples:
 
-The file `example/httpd.yml` shows how to configure a service to use EFK as its logging facility. To test using this file, just run:
+### Send data through Forward protocol
 
-    docker-compose -f docker-compose.yml -f example/httpd.yml up
+```json
+echo "{\"key\": 1234}" | fluent-cat test
+```
 
-Then, go to your browser and access `http://localhost:80` (httpd) and `http://localhost:5601` (kibana). You should be able to see the httpd's logs in kibana's discovery tab. By the way, if you are wondering what is this index kibana asks the fist time you access it, it is `fluentd-*`.
+### Send data through Syslog UDP socket
 
-After you are done, just run:
-
-    docker-compose -f docker-compose.yml -f example/httpd.yml rm -f
-
-And all services will be reclaimed.
+```bash
+logger -d -n 127.0.0.1 --port 5140 "hello"
+```
 
