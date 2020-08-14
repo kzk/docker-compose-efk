@@ -1,28 +1,52 @@
-version: '2'
+version: '2.2'
 services:
 
-  fluentd:
-    build: ./fluentd
+  fluent-bit:
+    image: fluent/fluent-bit:1.5
     volumes:
-      - ./fluentd/conf:/fluentd/etc
+      - ./fluent-bit/conf:/fluent-bit/etc
     links:
       - "elasticsearch"
     ports:
-      - "24224:24224"
-      - "24224:24224/udp"
+      - 24224:24224
+      - 5140:5140/udp
+      - 2020:2020
     logging:
         driver: "json-file"
         options:
             max-size: 100m
             max-file: "5"
+    networks:
+      - elastic
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
+    container_name: es01
+    ports:
+      - "9200:9200"
+    networks:
+      - elastic
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - bootstrap.memory_lock=false
+      - cluster.initial_master_nodes=es01
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:5.3.0
+    image: docker.elastic.co/kibana/kibana:7.8.1
+    container_name: kib01
     links:
       - "elasticsearch"
     ports:
-      - "5601:5601"
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://es01:9200
+      ELASTICSEARCH_HOSTS: http://es01:9200
+    networks:
+      - elastic
+
+networks:
+  elastic:
+    driver: bridge
 
